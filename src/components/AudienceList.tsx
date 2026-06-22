@@ -3,8 +3,8 @@ import { useState } from "react";
 import type { Audience } from "@/lib/types";
 import { addAudience, deleteAudience } from "@/app/actions";
 
-export function AudienceList({ bookingId, audiences, onChanged }: {
-  bookingId: string; audiences: Audience[]; onChanged: () => void;
+export function AudienceList({ bookingId, audiences, isAdmin, onChanged }: {
+  bookingId: string; audiences: Audience[]; isAdmin: boolean; onChanged: () => void;
 }) {
   const [name, setName] = useState("");
   const [memo, setMemo] = useState("");
@@ -32,14 +32,16 @@ export function AudienceList({ bookingId, audiences, onChanged }: {
               <div className="text-xs font-bold">{a.name}</div>
               {a.memo && <div className="text-[11px] text-muted-foreground">{a.memo}</div>}
             </div>
-            <button onClick={() => remove(a.id)} className="text-xs text-muted-foreground">✕</button>
+            {isAdmin && <button onClick={() => remove(a.id)} className="text-xs text-muted-foreground">✕</button>}
           </div>
         ))}
-      <div className="mt-2 flex gap-1.5">
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="이름" className="w-20 rounded-md border border-border px-2 py-1.5 text-xs" />
-        <input value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="메모(후원·결제)" className="flex-1 rounded-md border border-border px-2 py-1.5 text-xs" />
-        <button onClick={add} className="rounded-md bg-primary px-2 py-1.5 text-xs font-semibold text-primary-foreground">추가</button>
-      </div>
+      {isAdmin && (
+        <div className="mt-2 flex gap-1.5">
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="이름" className="w-20 rounded-md border border-border px-2 py-1.5 text-xs" />
+          <input value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="메모(후원·결제)" className="flex-1 rounded-md border border-border px-2 py-1.5 text-xs" />
+          <button onClick={add} className="rounded-md bg-primary px-2 py-1.5 text-xs font-semibold text-primary-foreground">추가</button>
+        </div>
+      )}
     </div>
   );
 }

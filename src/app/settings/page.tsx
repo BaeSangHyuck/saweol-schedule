@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function SettingsPage() {
   const [settings, rooms] = await Promise.all([getSettings(), getRooms()]);
   return (
-    <AppShell title="설정">
+    <AppShell title="설정" admin={true}>
       <SettingsForm settings={settings} rooms={rooms} />
     </AppShell>
   );
