@@ -3,7 +3,7 @@ import { useQueryState } from "nuqs";
 import { weekDates } from "@/lib/schedule";
 
 export function WeekNav({ defaultWeek }: { defaultWeek: string }) {
-  const [week, setWeek] = useQueryState("week", { defaultValue: defaultWeek });
+  const [week, setWeek] = useQueryState("week", { defaultValue: defaultWeek, shallow: false });
   const dates = weekDates(week);
   function shift(days: number) {
     const d = new Date(dates[0] + "T00:00:00");

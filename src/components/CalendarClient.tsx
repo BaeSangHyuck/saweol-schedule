@@ -10,7 +10,7 @@ import { getAudiencesAction } from "@/app/actions";
 export function CalendarClient({
   defaultWeek, rooms, settings, shows, bookings,
 }: { defaultWeek: string; rooms: Room[]; settings: Settings; shows: Show[]; bookings: BookingWithShow[] }) {
-  const [week] = useQueryState("week", { defaultValue: defaultWeek });
+  const [week] = useQueryState("week", { defaultValue: defaultWeek, shallow: false });
   const [placing, setPlacing] = useState<{ date: string; roomId: string; time: string } | null>(null);
   const [panel, setPanel] = useState<{ booking: BookingWithShow; audiences: Audience[] } | null>(null);
 

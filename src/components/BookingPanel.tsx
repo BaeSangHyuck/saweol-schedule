@@ -2,13 +2,20 @@
 import { useState } from "react";
 import type { Audience, BookingWithShow } from "@/lib/types";
 import { isFull } from "@/lib/schedule";
-import { updateBooking, deleteBooking } from "@/app/actions";
+import { updateBooking, deleteBooking, getAudiencesAction } from "@/app/actions";
 import { AudienceList } from "./AudienceList";
 
-export function BookingPanel({ booking, audiences, onClose }: {
+export function BookingPanel({ booking, audiences: initialAudiences, onClose }: {
   booking: BookingWithShow; audiences: Audience[]; onClose: () => void;
 }) {
   const [gm, setGm] = useState(booking.gm_name ?? "");
+  const [audiences, setAudiences] = useState<Audience[]>(initialAudiences);
+
+  async function refreshAudiences() {
+    const next = await getAudiencesAction(booking.id);
+    setAudiences(next);
+  }
+
   const full = isFull(audiences.length, booking.show.capacity);
   const capLabel = booking.show.capacity
     ? `${audiences.length} / ${booking.show.capacity}명${full ? " · 마감" : ""}`
@@ -38,7 +45,7 @@ export function BookingPanel({ booking, audiences, onClose }: {
             <span className="text-xs font-bold">관객</span>
             <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${full ? "bg-red-100 text-red-700" : "bg-secondary text-secondary-foreground"}`}>{capLabel}</span>
           </div>
-          <AudienceList bookingId={booking.id} audiences={audiences} />
+          <AudienceList bookingId={booking.id} audiences={audiences} onChanged={refreshAudiences} />
         </div>
         <button onClick={async () => { await deleteBooking(booking.id); onClose(); }}
           className="text-sm text-destructive">이 배치 삭제</button>
