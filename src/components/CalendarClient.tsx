@@ -53,7 +53,7 @@ export function CalendarClient({
           onClose={() => setPlacing(null)} />
       )}
       {panel && (
-        <BookingPanel booking={panel.booking} audiences={panel.audiences} gms={gms} isAdmin={isAdmin} onClose={() => setPanel(null)} />
+        <BookingPanel key={panel.booking.id} booking={panel.booking} audiences={panel.audiences} gms={gms} isAdmin={isAdmin} onClose={() => setPanel(null)} />
       )}
     </>
   );
