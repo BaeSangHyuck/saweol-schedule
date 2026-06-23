@@ -1,8 +1,13 @@
 import { supabaseServer } from "./server";
-import type { Room, Settings, Show, BookingWithShow } from "../types";
+import type { Room, Gm, Settings, Show, BookingWithShow } from "../types";
 
 export async function getRooms(): Promise<Room[]> {
   const { data } = await supabaseServer().from("rooms").select("*").order("sort_order");
+  return data ?? [];
+}
+
+export async function getGms(): Promise<Gm[]> {
+  const { data } = await supabaseServer().from("gms").select("*").order("sort_order");
   return data ?? [];
 }
 
@@ -16,7 +21,7 @@ export async function getShows(): Promise<Show[]> {
   return data ?? [];
 }
 
-// 한 주의 bookings + show + 관객수
+// 여러 날짜의 bookings + show + gm + 관객수
 export async function getBookingsForDates(dates: string[]): Promise<BookingWithShow[]> {
   interface BookingRow {
     id: string;
@@ -25,17 +30,20 @@ export async function getBookingsForDates(dates: string[]): Promise<BookingWithS
     date: string;
     start_time: string;
     duration_minutes: number;
+    gm_id: string | null;
     gm_name: string | null;
     show: Show;
+    gm: { id: string; name: string } | null;
     audiences: Array<{ count: number }>;
   }
   const { data } = await supabaseServer()
     .from("bookings")
-    .select("*, show:shows(*), audiences(count)")
+    .select("*, show:shows(*), gm:gms(id,name), audiences(count)")
     .in("date", dates);
   return (data as BookingRow[] ?? []).map((b) => ({
     ...b,
     show: b.show,
+    gm: b.gm,
     audience_count: b.audiences?.[0]?.count ?? 0,
   }));
 }

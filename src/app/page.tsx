@@ -1,23 +1,24 @@
 import { AppShell } from "@/components/AppShell";
-import { WeekNav } from "@/components/WeekNav";
+import { CalendarNav } from "@/components/CalendarNav";
 import { CalendarClient } from "@/components/CalendarClient";
-import { getRooms, getSettings, getShows, getBookingsForDates } from "@/lib/supabase/queries";
-import { weekDates } from "@/lib/schedule";
+import { getRooms, getSettings, getShows, getGms, getBookingsForDates } from "@/lib/supabase/queries";
+import { weekDates, monthDates } from "@/lib/schedule";
 import { isAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-export default async function Home({ searchParams }: { searchParams: { week?: string } }) {
+export default async function Home({ searchParams }: { searchParams: { week?: string; view?: string } }) {
   const today = new Date();
-  const defaultWeek = searchParams.week ?? today.toISOString().slice(0, 10);
-  const dates = weekDates(defaultWeek);
+  const anchor = searchParams.week ?? today.toISOString().slice(0, 10);
+  const view = searchParams.view === "month" ? "month" : "week";
+  const dates = view === "month" ? monthDates(anchor) : weekDates(anchor);
   const admin = isAdmin();
-  const [rooms, settings, shows, bookings] = await Promise.all([
-    getRooms(), getSettings(), getShows(), getBookingsForDates(dates),
+  const [rooms, settings, shows, gms, bookings] = await Promise.all([
+    getRooms(), getSettings(), getShows(), getGms(), getBookingsForDates(dates),
   ]);
   return (
-    <AppShell title="주간 캘린더" admin={admin} action={<WeekNav defaultWeek={defaultWeek} />}>
-      <CalendarClient defaultWeek={defaultWeek} rooms={rooms} settings={settings} shows={shows} bookings={bookings} isAdmin={admin} />
+    <AppShell title={view === "month" ? "월간 캘린더" : "주간 캘린더"} admin={admin} action={<CalendarNav defaultWeek={anchor} />}>
+      <CalendarClient dates={dates} view={view} rooms={rooms} settings={settings} shows={shows} gms={gms} bookings={bookings} isAdmin={admin} />
     </AppShell>
   );
 }

@@ -1,5 +1,7 @@
 export type Room = { id: string; name: string; sort_order: number };
 
+export type Gm = { id: string; name: string; sort_order: number };
+
 export type Settings = {
   id: number;
   open_time: string;   // 'HH:MM'
@@ -23,6 +25,7 @@ export type Booking = {
   date: string;        // 'YYYY-MM-DD'
   start_time: string;  // 'HH:MM'
   duration_minutes: number;
+  gm_id: string | null;
   gm_name: string | null;
 };
 
@@ -34,4 +37,8 @@ export type Audience = {
 };
 
 // 캘린더 렌더용 조인 결과
-export type BookingWithShow = Booking & { show: Show; audience_count: number };
+export type BookingWithShow = Booking & {
+  show: Show;
+  gm: { id: string; name: string } | null;
+  audience_count: number;
+};

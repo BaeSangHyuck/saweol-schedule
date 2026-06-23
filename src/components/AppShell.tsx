@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { logout } from "@/app/actions";
+import { LogoutButton } from "./LogoutButton";
 
 export function AppShell({ title, action, admin, children }: {
   title: string; action?: React.ReactNode; admin: boolean; children: React.ReactNode;
@@ -13,16 +13,12 @@ export function AppShell({ title, action, admin, children }: {
         <nav className="space-y-1 text-sm font-medium">
           <Link href="/" className="block rounded-md px-3 py-2 hover:bg-muted">📅 주간 캘린더</Link>
           {admin && <Link href="/shows" className="block rounded-md px-3 py-2 hover:bg-muted">🎭 공연 Info</Link>}
+          {admin && <Link href="/gm" className="block rounded-md px-3 py-2 hover:bg-muted">🧑‍🏫 GM 관리</Link>}
           {admin && <Link href="/settings" className="block rounded-md px-3 py-2 hover:bg-muted">⚙️ 설정</Link>}
         </nav>
-        <div className="mt-auto pt-4 text-xs">
-          {admin ? (
-            <form action={logout}>
-              <button className="text-muted-foreground hover:text-foreground">관리자 모드 종료</button>
-            </form>
-          ) : (
-            <Link href="/login" className="text-secondary-foreground hover:underline">🔑 관리자 입장</Link>
-          )}
+        <div className="mt-auto space-y-2 pt-4 text-xs">
+          <div className="text-muted-foreground">{admin ? "👑 마스터" : "👤 게스트"}</div>
+          <LogoutButton />
         </div>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">

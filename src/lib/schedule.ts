@@ -46,3 +46,20 @@ export function weekDates(dateStr: string): string[] {
     return `${yyyy}-${mm}-${dd}`;
   });
 }
+
+// 'YYYY-MM-DD'가 속한 달의 1일~말일 전체 날짜 문자열
+export function monthDates(dateStr: string): string[] {
+  const d = new Date(dateStr + "T00:00:00");
+  const y = d.getFullYear();
+  const m = d.getMonth();
+  const last = new Date(y, m + 1, 0).getDate();
+  const mm = String(m + 1).padStart(2, "0");
+  return Array.from({ length: last }, (_, i) => `${y}-${mm}-${String(i + 1).padStart(2, "0")}`);
+}
+
+// 날짜의 요일 라벨/주말 여부 (토=파랑, 일=빨강)
+const DOW_LABEL = ["일", "월", "화", "수", "목", "금", "토"];
+export function dowInfo(dateStr: string): { label: string; isSat: boolean; isSun: boolean } {
+  const day = new Date(dateStr + "T00:00:00").getDay();
+  return { label: DOW_LABEL[day], isSat: day === 6, isSun: day === 0 };
+}

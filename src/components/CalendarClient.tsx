@@ -1,18 +1,29 @@
 "use client";
 import { useState } from "react";
-import { useQueryState } from "nuqs";
-import type { Room, Settings, Show, BookingWithShow, Audience } from "@/lib/types";
-import { WeekCalendar } from "./WeekCalendar";
+import { useQueryStates, parseAsString } from "nuqs";
+import type { Room, Settings, Show, Gm, BookingWithShow, Audience } from "@/lib/types";
+import { ScheduleGrid } from "./ScheduleGrid";
+import { CalendarFilter } from "./CalendarFilter";
 import { PlaceBookingModal } from "./PlaceBookingModal";
 import { BookingPanel } from "./BookingPanel";
 import { getAudiencesAction } from "@/app/actions";
 
 export function CalendarClient({
-  defaultWeek, rooms, settings, shows, bookings, isAdmin,
-}: { defaultWeek: string; rooms: Room[]; settings: Settings; shows: Show[]; bookings: BookingWithShow[]; isAdmin: boolean }) {
-  const [week] = useQueryState("week", { defaultValue: defaultWeek, shallow: false });
+  dates, view, rooms, settings, shows, gms, bookings, isAdmin,
+}: {
+  dates: string[]; view: "week" | "month"; rooms: Room[]; settings: Settings;
+  shows: Show[]; gms: Gm[]; bookings: BookingWithShow[]; isAdmin: boolean;
+}) {
+  const [{ show, gm }] = useQueryStates({
+    show: parseAsString.withDefault(""),
+    gm: parseAsString.withDefault(""),
+  });
   const [placing, setPlacing] = useState<{ date: string; roomId: string; time: string } | null>(null);
   const [panel, setPanel] = useState<{ booking: BookingWithShow; audiences: Audience[] } | null>(null);
+
+  const filtered = bookings.filter((b) =>
+    (!show || b.show_id === show) && (!gm || b.gm_id === gm)
+  );
 
   async function openPanel(b: BookingWithShow) {
     const audiences = await getAudiencesAction(b.id);
@@ -21,15 +32,16 @@ export function CalendarClient({
 
   return (
     <>
-      <WeekCalendar week={week} rooms={rooms} settings={settings} bookings={bookings} isAdmin={isAdmin}
+      <CalendarFilter shows={shows} gms={gms} />
+      <ScheduleGrid dates={dates} view={view} rooms={rooms} settings={settings} bookings={filtered} isAdmin={isAdmin}
         onEmptyClick={(date, roomId, time) => { if (isAdmin) setPlacing({ date, roomId, time }); }}
         onBlockClick={openPanel} />
       {placing && (
-        <PlaceBookingModal shows={shows} date={placing.date} roomId={placing.roomId} time={placing.time}
+        <PlaceBookingModal shows={shows} gms={gms} date={placing.date} roomId={placing.roomId} time={placing.time}
           onClose={() => setPlacing(null)} />
       )}
       {panel && (
-        <BookingPanel booking={panel.booking} audiences={panel.audiences} isAdmin={isAdmin} onClose={() => setPanel(null)} />
+        <BookingPanel booking={panel.booking} audiences={panel.audiences} gms={gms} isAdmin={isAdmin} onClose={() => setPanel(null)} />
       )}
     </>
   );

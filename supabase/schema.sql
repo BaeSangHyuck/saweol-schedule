@@ -4,6 +4,12 @@ create table if not exists rooms (
   sort_order int not null default 0
 );
 
+create table if not exists gms (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  sort_order int not null default 0
+);
+
 create table if not exists settings (
   id int primary key default 1,
   open_time text not null default '08:00',
@@ -30,6 +36,7 @@ create table if not exists bookings (
   start_time text not null,
   duration_minutes int not null,
   gm_name text,
+  gm_id uuid references gms(id) on delete set null,
   created_at timestamptz not null default now()
 );
 
@@ -40,6 +47,9 @@ create table if not exists audiences (
   memo text,
   created_at timestamptz not null default now()
 );
+
+-- 기존 DB 마이그레이션용 (이미 bookings 테이블이 있는 경우)
+alter table bookings add column if not exists gm_id uuid references gms(id) on delete set null;
 
 -- seed
 insert into settings (id) values (1) on conflict (id) do nothing;

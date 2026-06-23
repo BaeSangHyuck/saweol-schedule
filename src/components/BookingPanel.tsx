@@ -1,14 +1,14 @@
 "use client";
 import { useState } from "react";
-import type { Audience, BookingWithShow } from "@/lib/types";
+import type { Audience, BookingWithShow, Gm } from "@/lib/types";
 import { isFull } from "@/lib/schedule";
 import { updateBooking, deleteBooking, getAudiencesAction } from "@/app/actions";
 import { AudienceList } from "./AudienceList";
 
-export function BookingPanel({ booking, audiences: initialAudiences, isAdmin, onClose }: {
-  booking: BookingWithShow; audiences: Audience[]; isAdmin: boolean; onClose: () => void;
+export function BookingPanel({ booking, audiences: initialAudiences, gms, isAdmin, onClose }: {
+  booking: BookingWithShow; audiences: Audience[]; gms: Gm[]; isAdmin: boolean; onClose: () => void;
 }) {
-  const [gm, setGm] = useState(booking.gm_name ?? "");
+  const [gmId, setGmId] = useState(booking.gm_id ?? "");
   const [audiences, setAudiences] = useState<Audience[]>(initialAudiences);
 
   async function refreshAudiences() {
@@ -20,6 +20,7 @@ export function BookingPanel({ booking, audiences: initialAudiences, isAdmin, on
   const capLabel = booking.show.capacity
     ? `${audiences.length} / ${booking.show.capacity}명${full ? " · 마감" : ""}`
     : `${audiences.length}명 · 무제한`;
+  const gmName = booking.gm?.name ?? booking.gm_name;
 
   return (
     <div className="fixed right-0 top-0 z-50 flex h-screen w-[360px] flex-col border-l border-border bg-white shadow-2xl">
@@ -36,12 +37,15 @@ export function BookingPanel({ booking, audiences: initialAudiences, isAdmin, on
           <div className="mb-1.5 text-[11px] font-bold text-muted-foreground">GM</div>
           {isAdmin ? (
             <div className="flex gap-1.5">
-              <input value={gm} onChange={(e) => setGm(e.target.value)} className="flex-1 rounded-md border border-border px-2 py-1.5 text-sm" />
-              <button onClick={() => updateBooking(booking.id, { gm_name: gm || null })}
+              <select value={gmId} onChange={(e) => setGmId(e.target.value)} className="flex-1 rounded-md border border-border px-2 py-1.5 text-sm">
+                <option value="">미지정</option>
+                {gms.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+              </select>
+              <button onClick={() => updateBooking(booking.id, { gm_id: gmId || null })}
                 className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold">저장</button>
             </div>
           ) : (
-            <div className="text-sm">{booking.gm_name || "미정"}</div>
+            <div className="text-sm">{gmName || "미정"}</div>
           )}
         </div>
         <div>

@@ -27,17 +27,29 @@ export async function deleteShow(id: string) {
   revalidatePath("/shows"); revalidatePath("/");
 }
 
+// ----- gms -----
+export async function createGm(name: string, sort_order: number) {
+  requireAdmin();
+  await supabaseServer().from("gms").insert({ name, sort_order });
+  revalidatePath("/gm"); revalidatePath("/");
+}
+export async function deleteGm(id: string) {
+  requireAdmin();
+  await supabaseServer().from("gms").delete().eq("id", id);
+  revalidatePath("/gm"); revalidatePath("/");
+}
+
 // ----- bookings -----
 export async function createBooking(input: {
   show_id: string; room_id: string; date: string;
-  start_time: string; duration_minutes: number; gm_name: string | null;
+  start_time: string; duration_minutes: number; gm_id: string | null;
 }) {
   requireAdmin();
   await supabaseServer().from("bookings").insert(input);
   revalidatePath("/");
 }
 export async function updateBooking(id: string, input: Partial<{
-  gm_name: string | null; duration_minutes: number;
+  gm_id: string | null; duration_minutes: number;
 }>) {
   requireAdmin();
   await supabaseServer().from("bookings").update(input).eq("id", id);
