@@ -27,6 +27,7 @@ export type Booking = {
   duration_minutes: number;
   gm_id: string | null;
   gm_name: string | null;
+  description: string | null; // 공간대여 등 대여 작품명 메모
 };
 
 export type Audience = {
@@ -34,7 +35,7 @@ export type Audience = {
   booking_id: string;
   name: string;
   memo: string | null;
-  payment_status: string | null; // '전액결제' | '차액결제' | null(미정)
+  payment_status: string | null; // '전액결제' | '차액결제' | '임직원' | '예약번호' | null(미정)
 };
 
 // 캘린더 렌더용 조인 결과

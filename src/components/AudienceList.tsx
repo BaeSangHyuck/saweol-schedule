@@ -4,15 +4,17 @@ import type { Audience } from "@/lib/types";
 import { addAudience, deleteAudience, updateAudience } from "@/app/actions";
 import { PAYMENT_STATUSES, paymentBadge } from "@/lib/payment";
 
-export function AudienceList({ bookingId, audiences, isAdmin, onChanged }: {
-  bookingId: string; audiences: Audience[]; isAdmin: boolean; onChanged: () => void;
+export function AudienceList({ bookingId, audiences, isAdmin, capacity, onChanged }: {
+  bookingId: string; audiences: Audience[]; isAdmin: boolean; capacity: number | null; onChanged: () => void;
 }) {
   const [name, setName] = useState("");
   const [pay, setPay] = useState("");
   const [memo, setMemo] = useState("");
 
+  const atCapacity = capacity != null && audiences.length >= capacity;
+
   async function add() {
-    if (!name) return;
+    if (!name || atCapacity) return;
     await addAudience({ booking_id: bookingId, name, memo: memo || null, payment_status: pay || null });
     setName("");
     setPay("");
@@ -71,19 +73,25 @@ export function AudienceList({ bookingId, audiences, isAdmin, onChanged }: {
           );
         })}
       {isAdmin && (
-        <div className="mt-2 space-y-1.5">
-          <div className="flex gap-1.5">
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="이름" className="w-20 rounded-md border border-border px-2 py-1.5 text-xs" />
-            <select value={pay} onChange={(e) => setPay(e.target.value)} className="rounded-md border border-border px-2 py-1.5 text-xs">
-              <option value="">미정</option>
-              {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <button onClick={add} className="rounded-md bg-primary px-2 py-1.5 text-xs font-semibold text-primary-foreground">추가</button>
+        atCapacity ? (
+          <div className="mt-2 rounded-md border border-dashed border-red-300 bg-red-50 p-2 text-center text-xs font-semibold text-red-600">
+            정원이 가득 찼습니다 ({audiences.length}/{capacity})
           </div>
-          {pay === "예약번호" && (
-            <input value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="예약번호 입력" className="w-full rounded-md border border-border px-2 py-1.5 text-xs" />
-          )}
-        </div>
+        ) : (
+          <div className="mt-2 space-y-1.5">
+            <div className="flex gap-1.5">
+              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="이름" className="w-20 rounded-md border border-border px-2 py-1.5 text-xs" />
+              <select value={pay} onChange={(e) => setPay(e.target.value)} className="rounded-md border border-border px-2 py-1.5 text-xs">
+                <option value="">미정</option>
+                {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <button onClick={add} className="rounded-md bg-primary px-2 py-1.5 text-xs font-semibold text-primary-foreground">추가</button>
+            </div>
+            {pay === "예약번호" && (
+              <input value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="예약번호 입력" className="w-full rounded-md border border-border px-2 py-1.5 text-xs" />
+            )}
+          </div>
+        )
       )}
     </div>
   );

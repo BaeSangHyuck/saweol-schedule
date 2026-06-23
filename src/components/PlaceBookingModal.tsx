@@ -9,6 +9,7 @@ export function PlaceBookingModal({
   const [showId, setShowId] = useState(shows[0]?.id ?? "");
   const [dur, setDur] = useState("90");
   const [gmId, setGmId] = useState("");
+  const [desc, setDesc] = useState("");
   const selected = shows.find((s) => s.id === showId);
   const isFree = selected ? selected.default_play_minutes == null : false;
 
@@ -17,7 +18,7 @@ export function PlaceBookingModal({
     const duration = isFree ? Number(dur) : selected.default_play_minutes!;
     await createBooking({
       show_id: showId, room_id: roomId, date, start_time: time,
-      duration_minutes: duration, gm_id: gmId || null,
+      duration_minutes: duration, gm_id: gmId || null, description: desc || null,
     });
     onClose();
   }
@@ -45,6 +46,10 @@ export function PlaceBookingModal({
             <option value="">미지정</option>
             {gms.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
           </select>
+        </div>
+        <div>
+          <div className="mb-1 text-[11px] font-bold text-muted-foreground">설명 (선택 · 예: 대여 작품명)</div>
+          <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={2} className="w-full rounded-md border border-border px-2 py-2 text-sm" />
         </div>
         <div className="flex justify-end gap-2 pt-2">
           <button onClick={onClose} className="rounded-md border border-border px-3 py-2 text-sm">취소</button>

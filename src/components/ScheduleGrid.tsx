@@ -3,7 +3,7 @@ import type { Room, Settings, BookingWithShow } from "@/lib/types";
 import { buildTimeSlots, spanSlots, isFull, dowInfo } from "@/lib/schedule";
 import { paymentBadge } from "@/lib/payment";
 
-// 주(week) 시간 그리드. 블록 안에 관객 명단(이름·결제상태)을 인라인 표시.
+// 주(week) 시간 그리드. 블록 안에 설명·관객 명단(이름·결제상태)을 인라인 표시.
 export function ScheduleGrid({
   dates, rooms, settings, bookings, isAdmin, view,
   onEmptyClick, onBlockClick,
@@ -91,6 +91,7 @@ function Block({ b, slot, slotPx, dense, onClick }: {
       className="absolute inset-x-[1px] top-[1px] z-10 cursor-pointer overflow-hidden rounded-[5px] border-l-[3px] border-l-black/25 px-1.5 py-1 leading-snug text-gray-800">
       {gmName && <div className={`font-bold opacity-80 ${dense ? "text-[8px]" : "text-[11px]"}`}>GM {gmName}</div>}
       <div className={`truncate font-bold ${dense ? "text-[9px]" : "text-[14px]"}`}>{b.show.title}</div>
+      {b.description && <div className={`whitespace-pre-line font-bold ${dense ? "text-[8px]" : "text-[12px]"} leading-snug`}>{b.description}</div>}
       <div className={`font-semibold ${full ? "text-red-700" : "opacity-80"} ${dense ? "text-[8px]" : "text-[12px]"}`}>{cap}</div>
       {!dense && b.audiences.length > 0 && (
         <div className="mt-1 space-y-0.5 border-t border-black/10 pt-1">

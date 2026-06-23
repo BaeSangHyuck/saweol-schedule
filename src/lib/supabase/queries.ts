@@ -36,6 +36,7 @@ export async function getBookingsForDates(dates: string[]): Promise<BookingWithS
     duration_minutes: number;
     gm_id: string | null;
     gm_name: string | null;
+    description: string | null;
     show: Show;
     gm: { id: string; name: string } | null;
     audiences: AudienceRow[];

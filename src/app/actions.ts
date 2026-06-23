@@ -42,14 +42,14 @@ export async function deleteGm(id: string) {
 // ----- bookings -----
 export async function createBooking(input: {
   show_id: string; room_id: string; date: string;
-  start_time: string; duration_minutes: number; gm_id: string | null;
+  start_time: string; duration_minutes: number; gm_id: string | null; description: string | null;
 }) {
   requireAdmin();
   await supabaseServer().from("bookings").insert(input);
   revalidatePath("/");
 }
 export async function updateBooking(id: string, input: Partial<{
-  gm_id: string | null; duration_minutes: number;
+  gm_id: string | null; duration_minutes: number; description: string | null;
 }>) {
   requireAdmin();
   await supabaseServer().from("bookings").update(input).eq("id", id);

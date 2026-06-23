@@ -37,6 +37,7 @@ create table if not exists bookings (
   duration_minutes int not null,
   gm_name text,
   gm_id uuid references gms(id) on delete set null,
+  description text,
   created_at timestamptz not null default now()
 );
 
@@ -51,6 +52,7 @@ create table if not exists audiences (
 
 -- 기존 DB 마이그레이션용 (이미 테이블이 있는 경우)
 alter table bookings add column if not exists gm_id uuid references gms(id) on delete set null;
+alter table bookings add column if not exists description text;
 alter table audiences add column if not exists payment_status text;
 
 -- seed

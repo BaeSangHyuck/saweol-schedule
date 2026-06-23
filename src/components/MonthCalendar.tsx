@@ -48,6 +48,7 @@ export function MonthCalendar({ weeks, bookings, isAdmin, onBlockClick, onDayCli
                           style={{ background: b.show.color }}
                           className="cursor-pointer truncate rounded px-1 py-0.5 text-[10px] font-semibold leading-tight text-gray-800">
                           <span className="opacity-70">{b.start_time}</span> {b.show.title}
+                          {b.description && <span className="opacity-90"> · {b.description}</span>}
                           {needPay && <span className="ml-0.5 font-bold text-red-700">·차액</span>}
                         </div>
                       );

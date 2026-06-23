@@ -9,6 +9,7 @@ export function BookingPanel({ booking, audiences: initialAudiences, gms, isAdmi
   booking: BookingWithShow; audiences: Audience[]; gms: Gm[]; isAdmin: boolean; onClose: () => void;
 }) {
   const [gmId, setGmId] = useState(booking.gm_id ?? "");
+  const [desc, setDesc] = useState(booking.description ?? "");
   const [audiences, setAudiences] = useState<Audience[]>(initialAudiences);
 
   async function refreshAudiences() {
@@ -49,11 +50,23 @@ export function BookingPanel({ booking, audiences: initialAudiences, gms, isAdmi
           )}
         </div>
         <div>
+          <div className="mb-1.5 text-[11px] font-bold text-muted-foreground">설명 (대여 작품명 등)</div>
+          {isAdmin ? (
+            <div className="space-y-1.5">
+              <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={2} className="w-full rounded-md border border-border px-2 py-1.5 text-sm" />
+              <button onClick={() => updateBooking(booking.id, { description: desc || null })}
+                className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold">저장</button>
+            </div>
+          ) : (
+            <div className="whitespace-pre-line text-sm">{booking.description || "—"}</div>
+          )}
+        </div>
+        <div>
           <div className="mb-2 flex items-center justify-between">
             <span className="text-xs font-bold">관객</span>
             <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${full ? "bg-red-100 text-red-700" : "bg-secondary text-secondary-foreground"}`}>{capLabel}</span>
           </div>
-          <AudienceList bookingId={booking.id} audiences={audiences} isAdmin={isAdmin} onChanged={refreshAudiences} />
+          <AudienceList bookingId={booking.id} audiences={audiences} isAdmin={isAdmin} capacity={booking.show.capacity} onChanged={refreshAudiences} />
         </div>
         {isAdmin && (
           <button onClick={async () => { await deleteBooking(booking.id); onClose(); }}
