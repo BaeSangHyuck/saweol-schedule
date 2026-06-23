@@ -57,6 +57,20 @@ export function monthDates(dateStr: string): string[] {
   return Array.from({ length: last }, (_, i) => `${y}-${mm}-${String(i + 1).padStart(2, "0")}`);
 }
 
+// 한 달을 월~일 주 단위로 묶은 그리드. 앞뒤 빈칸은 null.
+export function monthGrid(dateStr: string): (string | null)[][] {
+  const days = monthDates(dateStr);
+  const first = new Date(days[0] + "T00:00:00");
+  const lead = (first.getDay() + 6) % 7; // 월요일 시작 기준 앞쪽 빈칸 수
+  const cells: (string | null)[] = [];
+  for (let i = 0; i < lead; i++) cells.push(null);
+  cells.push(...days);
+  while (cells.length % 7 !== 0) cells.push(null);
+  const weeks: (string | null)[][] = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+  return weeks;
+}
+
 // 날짜의 요일 라벨/주말 여부 (토=파랑, 일=빨강)
 const DOW_LABEL = ["일", "월", "화", "수", "목", "금", "토"];
 export function dowInfo(dateStr: string): { label: string; isSat: boolean; isSun: boolean } {

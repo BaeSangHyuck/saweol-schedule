@@ -45,11 +45,13 @@ create table if not exists audiences (
   booking_id uuid not null references bookings(id) on delete cascade,
   name text not null,
   memo text,
+  payment_status text,
   created_at timestamptz not null default now()
 );
 
--- 기존 DB 마이그레이션용 (이미 bookings 테이블이 있는 경우)
+-- 기존 DB 마이그레이션용 (이미 테이블이 있는 경우)
 alter table bookings add column if not exists gm_id uuid references gms(id) on delete set null;
+alter table audiences add column if not exists payment_status text;
 
 -- seed
 insert into settings (id) values (1) on conflict (id) do nothing;

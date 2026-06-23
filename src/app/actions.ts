@@ -62,9 +62,14 @@ export async function deleteBooking(id: string) {
 }
 
 // ----- audiences -----
-export async function addAudience(input: { booking_id: string; name: string; memo: string | null }) {
+export async function addAudience(input: { booking_id: string; name: string; memo: string | null; payment_status: string | null }) {
   requireAdmin();
   await supabaseServer().from("audiences").insert(input);
+  revalidatePath("/");
+}
+export async function updateAudience(id: string, input: Partial<{ name: string; memo: string | null; payment_status: string | null }>) {
+  requireAdmin();
+  await supabaseServer().from("audiences").update(input).eq("id", id);
   revalidatePath("/");
 }
 export async function deleteAudience(id: string) {

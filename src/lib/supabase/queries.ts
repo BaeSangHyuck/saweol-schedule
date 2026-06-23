@@ -21,8 +21,12 @@ export async function getShows(): Promise<Show[]> {
   return data ?? [];
 }
 
-// 여러 날짜의 bookings + show + gm + 관객수
+// 여러 날짜의 bookings + show + gm + 관객 명단(결제상태 포함)
 export async function getBookingsForDates(dates: string[]): Promise<BookingWithShow[]> {
+  interface AudienceRow {
+    id: string; name: string; memo: string | null;
+    payment_status: string | null; created_at: string;
+  }
   interface BookingRow {
     id: string;
     show_id: string;
@@ -34,18 +38,24 @@ export async function getBookingsForDates(dates: string[]): Promise<BookingWithS
     gm_name: string | null;
     show: Show;
     gm: { id: string; name: string } | null;
-    audiences: Array<{ count: number }>;
+    audiences: AudienceRow[];
   }
   const { data } = await supabaseServer()
     .from("bookings")
-    .select("*, show:shows(*), gm:gms(id,name), audiences(count)")
+    .select("*, show:shows(*), gm:gms(id,name), audiences(id,name,memo,payment_status,created_at)")
     .in("date", dates);
-  return (data as BookingRow[] ?? []).map((b) => ({
-    ...b,
-    show: b.show,
-    gm: b.gm,
-    audience_count: b.audiences?.[0]?.count ?? 0,
-  }));
+  return (data as BookingRow[] ?? []).map((b) => {
+    const sorted = (b.audiences ?? []).slice().sort((x, y) => x.created_at.localeCompare(y.created_at));
+    return {
+      ...b,
+      show: b.show,
+      gm: b.gm,
+      audiences: sorted.map((a) => ({
+        id: a.id, booking_id: b.id, name: a.name, memo: a.memo, payment_status: a.payment_status,
+      })),
+      audience_count: sorted.length,
+    };
+  });
 }
 
 export async function getAudiences(bookingId: string) {

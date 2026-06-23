@@ -34,11 +34,13 @@ export type Audience = {
   booking_id: string;
   name: string;
   memo: string | null;
+  payment_status: string | null; // '전액결제' | '차액결제' | null(미정)
 };
 
 // 캘린더 렌더용 조인 결과
 export type BookingWithShow = Booking & {
   show: Show;
   gm: { id: string; name: string } | null;
+  audiences: Audience[];
   audience_count: number;
 };
