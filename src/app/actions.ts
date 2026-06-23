@@ -84,10 +84,16 @@ export async function updateSettings(input: { open_time: string; close_time: str
   await supabaseServer().from("settings").update(input).eq("id", 1);
   revalidatePath("/"); revalidatePath("/settings");
 }
-export async function createRoom(name: string, sort_order: number) {
+export async function createRoom(name: string, sort_order: number): Promise<{ ok: boolean; reason?: string }> {
   requireAdmin();
-  await supabaseServer().from("rooms").insert({ name, sort_order });
+  const trimmed = name.trim();
+  if (!trimmed) return { ok: false, reason: "empty" };
+  // 동일 이름 방 중복 생성 방지
+  const { data: existing } = await supabaseServer().from("rooms").select("id").eq("name", trimmed).maybeSingle();
+  if (existing) return { ok: false, reason: "duplicate" };
+  await supabaseServer().from("rooms").insert({ name: trimmed, sort_order });
   revalidatePath("/"); revalidatePath("/settings");
+  return { ok: true };
 }
 export async function deleteRoom(id: string) {
   requireAdmin();
