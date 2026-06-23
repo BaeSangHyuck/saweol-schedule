@@ -88,17 +88,17 @@ function Block({ b, slot, slotPx, dense, onClick }: {
   return (
     <div onClick={(e) => { e.stopPropagation(); onClick(); }}
       style={{ background: b.show.color, minHeight: span * slotPx - 2 }}
-      className="absolute inset-x-[1px] top-[1px] z-10 cursor-pointer overflow-hidden rounded-[5px] border-l-[3px] border-l-black/25 px-1 py-0.5 leading-tight text-gray-800">
-      {gmName && <div className={`font-bold opacity-80 ${dense ? "text-[8px]" : "text-[10px]"}`}>GM {gmName}</div>}
-      <div className={`truncate font-bold ${dense ? "text-[9px]" : "text-[12px]"}`}>{b.show.title}</div>
-      <div className={`font-semibold ${full ? "text-red-700" : "opacity-80"} ${dense ? "text-[8px]" : "text-[10px]"}`}>{cap}</div>
+      className="absolute inset-x-[1px] top-[1px] z-10 cursor-pointer overflow-hidden rounded-[5px] border-l-[3px] border-l-black/25 px-1.5 py-1 leading-snug text-gray-800">
+      {gmName && <div className={`font-bold opacity-80 ${dense ? "text-[8px]" : "text-[11px]"}`}>GM {gmName}</div>}
+      <div className={`truncate font-bold ${dense ? "text-[9px]" : "text-[14px]"}`}>{b.show.title}</div>
+      <div className={`font-semibold ${full ? "text-red-700" : "opacity-80"} ${dense ? "text-[8px]" : "text-[12px]"}`}>{cap}</div>
       {!dense && b.audiences.length > 0 && (
-        <div className="mt-0.5 space-y-[1px] border-t border-black/10 pt-0.5">
+        <div className="mt-1 space-y-0.5 border-t border-black/10 pt-1">
           {b.audiences.map((a) => {
-            const badge = paymentBadge(a.payment_status);
+            const badge = paymentBadge(a.payment_status, a.memo);
             return (
-              <div key={a.id} className="flex items-center justify-between gap-1 text-[9px] leading-tight">
-                <span className="truncate">{a.name}</span>
+              <div key={a.id} className="flex items-center justify-between gap-1.5 text-[11px] leading-tight">
+                <span className="truncate font-medium">{a.name}</span>
                 {badge && <span className={`shrink-0 ${badge.cls}`}>{badge.label}</span>}
               </div>
             );
